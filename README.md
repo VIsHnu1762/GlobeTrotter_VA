@@ -1,5 +1,21 @@
 # 🌍 GlobeTrotter - Travel Planning Application
 
+## 👥 Team Members
+
+| Name             | Role |
+|------------------|------|
+| Vishnu Dharshan  | Frontend Engineer |
+| Amalraajan       | Backend Engineer |
+
+## 🛠️ Role Summary
+
+- **Frontend Engineer**  
+  Responsible for user interface development, map-based visualization, user flow, and overall planner experience.
+
+- **Backend Engineer**  
+  Responsible for system architecture, data modeling, APIs, and maintaining clean version control and backend logic.
+
+*This project was developed collaboratively with a focus on planner-first design, clean system architecture, and effective teamwork under hackathon constraints.*
 **A planner-first multi-city travel planning system** that helps users design, visualize, and budget their trips before booking.
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
