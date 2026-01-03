@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     # Auth
+    path('auth/csrf/', views.get_csrf_token, name='csrf_token'),
     path('auth/register/', views.register_view, name='register'),
     path('auth/login/', views.login_view, name='login'),
     path('auth/logout/', views.logout_view, name='logout'),

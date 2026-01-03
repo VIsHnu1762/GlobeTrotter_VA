@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -11,6 +11,27 @@ from datetime import datetime
 
 from .models import Trip
 from itinerary.models import Stop, Activity
+
+
+# Standardized response format for frontend compatibility
+def success_response(data, message="Success", status=200):
+    """Standard success response format"""
+    return JsonResponse({
+        'success': True,
+        'data': data,
+        'message': message
+    }, status=status)
+
+
+def error_response(error, status=400, details=None):
+    """Standard error response format"""
+    response = {
+        'success': False,
+        'error': error
+    }
+    if details:
+        response['details'] = details
+    return JsonResponse(response, status=status)
 
 
 # Helper function to serialize model to dict
@@ -68,6 +89,13 @@ def serialize_activity(activity):
 
 # ============= AUTH VIEWS =============
 
+@ensure_csrf_cookie
+@require_http_methods(["GET"])
+def get_csrf_token(request):
+    """Get CSRF token for frontend"""
+    return success_response({}, message='CSRF token set')
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def register_view(request):
@@ -79,27 +107,26 @@ def register_view(request):
         password = data.get('password')
         
         if not username or not email or not password:
-            return JsonResponse({'error': 'All fields are required'}, status=400)
+            return error_response('All fields are required', status=400)
         
         if User.objects.filter(username=username).exists():
-            return JsonResponse({'error': 'Username already exists'}, status=400)
+            return error_response('Username already exists', status=400)
         
         if User.objects.filter(email=email).exists():
-            return JsonResponse({'error': 'Email already exists'}, status=400)
+            return error_response('Email already exists', status=400)
         
         user = User.objects.create_user(username=username, email=email, password=password)
         login(request, user)
         
-        return JsonResponse({
-            'message': 'Registration successful',
+        return success_response({
             'user': {
                 'id': user.id,
                 'username': user.username,
                 'email': user.email
             }
-        }, status=201)
+        }, message='Registration successful', status=201)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        return error_response(str(e), status=400)
 
 
 @csrf_exempt
@@ -115,18 +142,20 @@ def login_view(request):
         
         if user:
             login(request, user)
-            return JsonResponse({
-                'message': 'Login successful',
+            return success_response({
                 'user': {
                     'id': user.id,
                     'username': user.username,
                     'email': user.email
                 }
-            })
+            }, message='Login successful')
         else:
-            return JsonResponse({'error': 'Invalid credentials'}, status=401)
+            return error_response('Invalid credentials', status=401)
     except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
+        return error_response(str(e), status=400)
+
+
+@require_http_methods(["POST"])
 
 
 @require_http_methods(["POST"])
