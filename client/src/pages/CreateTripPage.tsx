@@ -90,13 +90,30 @@ const CreateTripPage: React.FC = () => {
             return;
         }
 
+        // Validate stop dates
+        for (const stop of stops) {
+            if (!stop.startDate || !stop.endDate) {
+                toast.error('Please set dates for all destinations');
+                return;
+            }
+        }
+
         setLoading(true);
         try {
-            // TODO: Implement actual trip creation API call
+            const { tripService } = await import('@services/tripService');
+            await tripService.createTrip({
+                title,
+                description,
+                startDate,
+                endDate,
+                isPublic: false
+            });
+
             toast.success('Trip created successfully!');
             navigate('/dashboard');
-        } catch (error) {
-            toast.error('Failed to create trip');
+        } catch (error: any) {
+            console.error('Failed to create trip:', error);
+            toast.error(error?.response?.data?.message || 'Failed to create trip');
         } finally {
             setLoading(false);
         }

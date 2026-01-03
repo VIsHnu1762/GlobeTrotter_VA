@@ -2,17 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext';
 import toast from 'react-hot-toast';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
-import L from 'leaflet';
+import TripMap from '../components/TripMap';
 import 'leaflet/dist/leaflet.css';
-
-// Fix default marker icon issue with webpack
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
 
 interface Stop {
     id: string;
@@ -51,6 +42,7 @@ const TripDetailsPage: React.FC = () => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [activeSection, setActiveSection] = useState<'overview' | 'explore' | 'itinerary'>('overview');
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const [selectedStopId, setSelectedStopId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchTrip = async () => {
@@ -367,65 +359,11 @@ const TripDetailsPage: React.FC = () => {
 
             {/* Right Sidebar - Map */}
             <aside className="w-96 bg-white border-l border-gray-200 relative">
-                {trip.stops.length > 0 && trip.stops[0].latitude && trip.stops[0].longitude ? (
-                    <MapContainer
-                        center={[trip.stops[0].latitude, trip.stops[0].longitude]}
-                        zoom={12}
-                        style={{ height: '100%', width: '100%' }}
-                        className="z-0"
-                    >
-                        <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-
-                        {/* Markers for each stop */}
-                        {trip.stops.map((stop, index) => (
-                            stop.latitude && stop.longitude && (
-                                <Marker
-                                    key={stop.id}
-                                    position={[stop.latitude, stop.longitude]}
-                                >
-                                    <Popup>
-                                        <div className="text-center">
-                                            <h3 className="font-bold text-gray-900">{stop.city}</h3>
-                                            <p className="text-sm text-gray-600">{stop.country}</p>
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {formatDateRange(stop.startDate, stop.endDate)}
-                                            </p>
-                                            {stop.notes && (
-                                                <p className="text-xs text-gray-600 mt-1">{stop.notes}</p>
-                                            )}
-                                        </div>
-                                    </Popup>
-                                </Marker>
-                            )
-                        ))}
-
-                        {/* Draw route line between stops */}
-                        {trip.stops.length > 1 && (
-                            <Polyline
-                                positions={trip.stops
-                                    .filter(s => s.latitude && s.longitude)
-                                    .map(s => [s.latitude!, s.longitude!])}
-                                color="#ff6b6b"
-                                weight={3}
-                                opacity={0.7}
-                                dashArray="10, 10"
-                            />
-                        )}
-                    </MapContainer>
-                ) : (
-                    <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                        <div className="text-center p-8">
-                            <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                            </svg>
-                            <p className="text-gray-600 font-medium mb-2">No Location Data</p>
-                            <p className="text-sm text-gray-500">Add coordinates to your stops to see them on the map</p>
-                        </div>
-                    </div>
-                )}
+                <TripMap
+                    stops={trip.stops}
+                    selectedStopId={selectedStopId}
+                    onStopClick={(stopId) => setSelectedStopId(stopId)}
+                />
             </aside>
         </div>
     );

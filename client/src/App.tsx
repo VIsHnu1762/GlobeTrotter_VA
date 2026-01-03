@@ -14,6 +14,7 @@ import SharedTripPage from '@pages/SharedTripPage';
 import ProfilePage from '@pages/ProfilePage';
 import AdminDashboardPage from '@pages/AdminDashboardPage';
 import NotFoundPage from '@pages/NotFoundPage';
+import MapDemoPage from '@pages/MapDemoPage';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode; adminOnly?: boolean }> = ({
@@ -58,6 +59,7 @@ function AppRoutes() {
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
             <Route path="/share/:token" element={<SharedTripPage />} />
+            <Route path="/map-demo" element={<MapDemoPage />} />
 
             {/* Auth Routes */}
             <Route

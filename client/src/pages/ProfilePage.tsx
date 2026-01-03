@@ -85,13 +85,6 @@ const ProfilePage: React.FC = () => {
 
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Role
-                            </label>
-                            <p className="text-gray-900 capitalize">{user?.role}</p>
-                        </div>
-
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Member Since
                             </label>
                             <p className="text-gray-900">

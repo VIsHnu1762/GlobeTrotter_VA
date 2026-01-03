@@ -31,15 +31,15 @@ CREATE INDEX idx_destinations_continent ON destinations(continent);
 -- =====================================================
 INSERT INTO destinations (city, country, country_code, continent, latitude, longitude, description, popular_attractions, best_months, avg_budget_per_day, timezone) VALUES
 ('Paris', 'France', 'FR', 'Europe', 48.8566, 2.3522, 'The City of Light, famous for art, fashion, gastronomy and culture', 
-    ARRAY['Eiffel Tower', 'Louvre Museum', 'Notre-Dame Cathedral', 'Arc de Triomphe', 'Sacré-Cœur'], 
+    ARRAY['Eiffel Tower', 'Louvre Museum', 'Notre-Dame Cathedral', 'Arc de Triomphe', 'Sacré-Cœur', 'Champs-Élysées', 'Versailles Palace', 'Musée d''Orsay', 'Latin Quarter', 'Montmartre', 'Seine River Cruise', 'Disneyland Paris'], 
     'April-June, September-October', 150, 'Europe/Paris'),
 
 ('London', 'United Kingdom', 'GB', 'Europe', 51.5074, -0.1278, 'Historic capital with royal palaces, museums, and diverse culture', 
-    ARRAY['Big Ben', 'British Museum', 'Tower of London', 'Buckingham Palace', 'London Eye'], 
+    ARRAY['Big Ben', 'British Museum', 'Tower of London', 'Buckingham Palace', 'London Eye', 'Westminster Abbey', 'Tower Bridge', 'Hyde Park', 'Covent Garden', 'Piccadilly Circus', 'Camden Market', 'St Paul''s Cathedral', 'Kensington Palace'], 
     'May-September', 180, 'Europe/London'),
 
 ('Rome', 'Italy', 'IT', 'Europe', 41.9028, 12.4964, 'Eternal City with ancient ruins, Renaissance art, and world-class cuisine', 
-    ARRAY['Colosseum', 'Vatican Museums', 'Trevi Fountain', 'Roman Forum', 'Pantheon'], 
+    ARRAY['Colosseum', 'Vatican Museums', 'Trevi Fountain', 'Roman Forum', 'Pantheon', 'Sistine Chapel', 'Spanish Steps', 'Piazza Navona', 'Borghese Gallery', 'Castel Sant''Angelo', 'Palatine Hill', 'Villa Borghese', 'Trastevere'], 
     'April-June, September-October', 120, 'Europe/Rome'),
 
 ('Barcelona', 'Spain', 'ES', 'Europe', 41.3851, 2.1734, 'Mediterranean city known for Gaudí architecture and vibrant culture', 
@@ -75,7 +75,7 @@ INSERT INTO destinations (city, country, country_code, continent, latitude, long
 -- =====================================================
 INSERT INTO destinations (city, country, country_code, continent, latitude, longitude, description, popular_attractions, best_months, avg_budget_per_day, timezone) VALUES
 ('Tokyo', 'Japan', 'JP', 'Asia', 35.6762, 139.6503, 'Ultra-modern metropolis blending tradition with cutting-edge technology', 
-    ARRAY['Senso-ji Temple', 'Tokyo Skytree', 'Shibuya Crossing', 'Meiji Shrine', 'Tsukiji Market'], 
+    ARRAY['Senso-ji Temple', 'Tokyo Skytree', 'Shibuya Crossing', 'Meiji Shrine', 'Tsukiji Market', 'Imperial Palace', 'Harajuku', 'Akihabara', 'Shinjuku Gyoen', 'Tokyo Tower', 'Roppongi Hills', 'Ueno Park', 'teamLab Borderless'], 
     'March-May, September-November', 150, 'Asia/Tokyo'),
 
 ('Bangkok', 'Thailand', 'TH', 'Asia', 13.7563, 100.5018, 'Vibrant capital with temples, street food, and bustling markets', 
@@ -119,7 +119,7 @@ INSERT INTO destinations (city, country, country_code, continent, latitude, long
 -- =====================================================
 INSERT INTO destinations (city, country, country_code, continent, latitude, longitude, description, popular_attractions, best_months, avg_budget_per_day, timezone) VALUES
 ('New York', 'United States', 'US', 'North America', 40.7128, -74.0060, 'The Big Apple - iconic skyline, Broadway shows, and diverse neighborhoods', 
-    ARRAY['Statue of Liberty', 'Central Park', 'Times Square', 'Empire State Building', 'Brooklyn Bridge'], 
+    ARRAY['Statue of Liberty', 'Central Park', 'Times Square', 'Empire State Building', 'Brooklyn Bridge', 'Metropolitan Museum', '9/11 Memorial', 'Rockefeller Center', 'High Line', 'Broadway', 'Wall Street', 'Fifth Avenue', 'Grand Central'], 
     'April-June, September-November', 200, 'America/New_York'),
 
 ('Los Angeles', 'United States', 'US', 'North America', 34.0522, -118.2437, 'City of Angels with Hollywood glamour, beaches, and entertainment', 
@@ -179,7 +179,7 @@ INSERT INTO destinations (city, country, country_code, continent, latitude, long
 -- =====================================================
 INSERT INTO destinations (city, country, country_code, continent, latitude, longitude, description, popular_attractions, best_months, avg_budget_per_day, timezone) VALUES
 ('Sydney', 'Australia', 'AU', 'Oceania', -33.8688, 151.2093, 'Harbor city with iconic Opera House, beaches, and outdoor lifestyle', 
-    ARRAY['Sydney Opera House', 'Harbour Bridge', 'Bondi Beach', 'Darling Harbour', 'The Rocks'], 
+    ARRAY['Sydney Opera House', 'Harbour Bridge', 'Bondi Beach', 'Darling Harbour', 'The Rocks', 'Royal Botanic Garden', 'Manly Beach', 'Taronga Zoo', 'Blue Mountains', 'Circular Quay', 'Sydney Tower Eye', 'Coogee Beach'], 
     'September-November, March-May', 170, 'Australia/Sydney'),
 
 ('Melbourne', 'Australia', 'AU', 'Oceania', -37.8136, 144.9631, 'Cultural capital with street art, coffee culture, and sporting events', 
