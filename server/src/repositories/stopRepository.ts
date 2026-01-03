@@ -5,7 +5,14 @@ import { v4 as uuidv4 } from 'uuid';
 export class StopRepository {
     async findByTripId(tripId: string): Promise<Stop[]> {
         const result = await pool.query(
-            'SELECT * FROM stops WHERE trip_id = $1 ORDER BY order_index ASC',
+            `SELECT 
+                s.*,
+                d.latitude,
+                d.longitude
+            FROM stops s
+            LEFT JOIN destinations d ON LOWER(s.city) = LOWER(d.city) AND LOWER(s.country) = LOWER(d.country)
+            WHERE s.trip_id = $1 
+            ORDER BY s.order_index ASC`,
             [tripId]
         );
         return result.rows;

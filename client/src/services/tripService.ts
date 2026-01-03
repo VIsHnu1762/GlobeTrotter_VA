@@ -8,6 +8,14 @@ export const tripService = {
         return response.data.data!;
     },
 
+    // Get public trips to explore
+    getPublicTrips: async (limit?: number): Promise<Trip[]> => {
+        const response = await apiClient.get<ApiResponse<Trip[]>>('/trips/public/explore', {
+            params: { limit }
+        });
+        return response.data.data!;
+    },
+
     // Get single trip by ID
     getTripById: async (id: string): Promise<Trip> => {
         const response = await apiClient.get<ApiResponse<Trip>>(`/trips/${id}`);
