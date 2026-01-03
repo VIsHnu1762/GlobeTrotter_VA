@@ -1,22 +1,28 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
-// Create axios instance
+// Create axios instance with Django session support
 const apiClient: AxiosInstance = axios.create({
     baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
+    withCredentials: true, // Enable session cookies
     timeout: 10000,
 });
 
-// Request interceptor - Add auth token
+// Request interceptor - Django uses session cookies, no token needed
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        const token = localStorage.getItem('token');
-        if (token && config.headers) {
-            config.headers.Authorization = `Bearer ${token}`;
+        // Get CSRF token from cookie if needed
+        const csrfToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+
+        if (csrfToken && config.headers) {
+            config.headers['X-CSRFToken'] = csrfToken;
         }
         return config;
     },

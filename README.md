@@ -70,34 +70,26 @@ GlobeTrotter is a **pre-booking travel planner** focused on helping users:
 
 ## 🛠 Tech Stack
 
-### Frontend
-- **Framework:** React 18+ with TypeScript
-- **Build Tool:** Vite
-- **Styling:** TailwindCSS
-- **State Management:** React Context API + useReducer
-- **Routing:** React Router v6
-- **HTTP Client:** Axios
-- **UI Components:** Custom + Headless UI
-- **Date Handling:** date-fns
-- **Drag & Drop:** react-beautiful-dnd
-- **Charts:** Recharts
-
 ### Backend
-- **Runtime:** Node.js 18+
-- **Framework:** Express.js
-- **Language:** TypeScript
-- **Database:** PostgreSQL 15+
-- **ORM:** node-postgres (pg) with raw SQL
-- **Authentication:** JWT + bcrypt
-- **Validation:** express-validator
-- **API Documentation:** OpenAPI/Swagger
+- **Django 5.0** - Python web framework
+- **PostgreSQL 15+** - Relational database
+- **Django ORM** - Database operations
+- **Django Sessions** - Authentication (no JWT)
+- **Django Admin** - Built-in admin dashboard
+- **django-cors-headers** - CORS support
+
+### Frontend
+- **React 18** - UI framework
+- **TypeScript** - Type safety
+- **Vite** - Build tool
+- **Tailwind CSS** - Styling
+- **Axios** - HTTP client
+- **React Router** - Navigation
 
 ### DevOps & Tools
-- **Containerization:** Docker + Docker Compose
 - **Version Control:** Git
-- **Database Migrations:** Custom migration system
-- **Environment:** dotenv
-- **Testing:** Jest + React Testing Library
+- **Database Migrations:** Django migrations
+- **Environment:** python-decouple
 - **Linting:** ESLint + Prettier
 
 ---
@@ -109,11 +101,7 @@ globetrotter-va/
 ├── client/                   # React frontend
 │   ├── public/              # Static assets
 │   ├── src/
-│   │   ├── assets/          # Images, fonts, icons
 │   │   ├── components/      # Reusable UI components
-│   │   │   ├── common/      # Buttons, inputs, modals
-│   │   │   ├── layout/      # Header, footer, sidebar
-│   │   │   └── features/    # Feature-specific components
 │   │   ├── pages/           # Route-level components
 │   │   ├── contexts/        # React Context providers
 │   │   ├── hooks/           # Custom React hooks
@@ -125,27 +113,30 @@ globetrotter-va/
 │   ├── package.json
 │   └── vite.config.ts
 │
-├── server/                   # Node/Express backend
-│   ├── src/
-│   │   ├── config/          # Configuration files
-│   │   ├── controllers/     # Request handlers
-│   │   ├── services/        # Business logic
-│   │   ├── repositories/    # Database queries
-│   │   ├── middleware/      # Auth, validation, error
-│   │   ├── routes/          # API route definitions
-│   │   ├── utils/           # Helpers and utilities
-│   │   ├── types/           # TypeScript types
-│   │   ├── validators/      # Input validation schemas
-│   │   └── server.ts        # App entry point
-│   ├── package.json
-│   └── tsconfig.json
+├── backend/                  # Django backend
+│   ├── globetrotter_backend/  # Django project
+│   │   ├── settings.py      # Configuration
+│   │   ├── urls.py          # URL routing
+│   │   └── wsgi.py          # WSGI application
+│   ├── users/               # User app
+│   ├── trips/               # Trip models & views
+│   │   ├── models.py        # Trip model
+│   │   ├── views.py         # API views
+│   │   ├── admin.py         # Admin registration
+│   │   └── urls.py          # URL patterns
+│   ├── itinerary/           # Stops & activities
+│   │   ├── models.py        # Stop and Activity models
+│   │   └── admin.py         # Admin registration
+│   ├── budget/              # Budget logic
+│   ├── manage.py            # Django CLI
+│   ├── requirements.txt     # Python dependencies
+│   ├── setup.sh             # Setup script
+│   └── run.sh               # Run script
 │
 ├── database/                 # Database management
 │   ├── migrations/          # SQL migration files
-│   ├── seeds/               # Sample data
-│   └── schema.sql           # Complete schema
+│   └── seeds/               # Sample data
 │
-├── docker-compose.yml       # Container orchestration
 ├── package.json             # Root package (workspaces)
 ├── .gitignore
 └── README.md
@@ -301,8 +292,9 @@ See [database/schema.sql](database/schema.sql) for complete SQL definitions.
 ## 🚀 Getting Started
 
 ### Prerequisites
+- Python 3.10+ and pip
 - Node.js 18+ and npm 9+
-- PostgreSQL 15+ (or use Docker)
+- PostgreSQL 15+ installed and running
 - Git
 
 ### Installation
@@ -313,60 +305,68 @@ git clone https://github.com/VIsHnu1762/GlobeTrotter_VA.git
 cd GlobeTrotter_VA
 ```
 
-2. **Install dependencies**
+2. **Setup PostgreSQL Database**
 ```bash
+# Start PostgreSQL (if not running)
+brew services start postgresql@15  # macOS
+# or
+sudo systemctl start postgresql    # Linux
+
+# Create database
+psql -U postgres <<EOF
+CREATE USER globetrotter_user WITH PASSWORD 'globetrotter_pass';
+CREATE DATABASE globetrotter_db OWNER globetrotter_user;
+GRANT ALL PRIVILEGES ON DATABASE globetrotter_db TO globetrotter_user;
+ALTER USER globetrotter_user CREATEDB;
+EOF
+```
+
+3. **Setup Django Backend**
+```bash
+cd backend
+
+# Run automated setup script
+chmod +x setup.sh
+./setup.sh
+
+# OR manually:
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+4. **Setup React Frontend**
+```bash
+cd ../client
 npm install
 ```
 
-3. **Set up environment variables**
+5. **Start Development Servers**
 
-Create `.env` files in both `/client` and `/server`:
-
-**client/.env:**
-```env
-VITE_API_URL=http://localhost:5000/api
-```
-
-**server/.env:**
-```env
-NODE_ENV=development
-PORT=5000
-DATABASE_URL=postgresql://globetrotter_user:globetrotter_pass@localhost:5432/globetrotter_db
-JWT_SECRET=your_super_secret_jwt_key_change_in_production
-JWT_EXPIRES_IN=7d
-CLIENT_URL=http://localhost:3000
-```
-
-4. **Start with Docker (Recommended)**
+Terminal 1 - Django Backend:
 ```bash
-docker-compose up -d
+cd backend
+source venv/bin/activate
+python manage.py runserver 8000
 ```
 
-**OR start manually:**
-
+Terminal 2 - React Frontend:
 ```bash
-# Terminal 1 - Start PostgreSQL (if not using Docker)
-# Ensure PostgreSQL is running on port 5432
-
-# Terminal 2 - Start backend
-cd server
-npm install
-npm run migrate  # Run migrations
-npm run seed     # Seed sample data
-npm run dev
-
-# Terminal 3 - Start frontend
 cd client
-npm install
 npm run dev
 ```
 
-5. **Access the application**
+6. **Access the application**
 - Frontend: http://localhost:3000
-- Backend API: http://localhost:5000
-- API Docs: http://localhost:5000/api-docs
+- Backend API: http://localhost:8000/api
+- Django Admin: http://localhost:8000/admin
 
-### Default Test Accounts
+### Default Admin Account
+After running `createsuperuser`, use your credentials to access Django Admin.
 
 **Admin:**
 - Email: admin@globetrotter.com
@@ -636,36 +636,42 @@ npm run migrate:rollback
 
 ### Port Already in Use
 ```bash
-# Kill process on port 5000
-lsof -ti:5000 | xargs kill -9
+# Kill process on port 8000 (Django)
+lsof -ti:8000 | xargs kill -9
 
-# Kill process on port 3000
+# Kill process on port 3000 (React)
 lsof -ti:3000 | xargs kill -9
 ```
 
 ### Database Connection Issues
 ```bash
 # Check PostgreSQL status
-docker-compose ps
+pg_isready -h localhost -p 5432
 
-# View database logs
-docker-compose logs postgres
+# Connect to PostgreSQL
+psql -U globetrotter_user -d globetrotter_db
 
-# Restart database
-docker-compose restart postgres
+# Restart PostgreSQL (macOS with Homebrew)
+brew services restart postgresql@15
+
+# View Django migrations
+cd backend
+source venv/bin/activate
+python manage.py showmigrations
 ```
 
 ### Clear and Rebuild
 ```bash
-# Stop all containers
-docker-compose down -v
+# Remove frontend node_modules
+rm -rf client/node_modules
+cd client && npm install
 
-# Remove node_modules
-rm -rf node_modules client/node_modules server/node_modules
-
-# Fresh install
-npm install
-docker-compose up --build
+# Reset Django database
+cd backend
+source venv/bin/activate
+python manage.py flush
+python manage.py migrate
+python manage.py createsuperuser
 ```
 
 ---

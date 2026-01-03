@@ -2,42 +2,32 @@
 
 ## 5-Minute Setup
 
-### Option 1: Docker (Recommended)
+### Prerequisites
+- Node.js 18+ installed
+- PostgreSQL installed and running on port 5432
+
+### Setup Steps
 
 ```bash
-# 1. Start all services
-docker-compose up -d
-
-# 2. Wait 30 seconds for database to initialize
-
-# 3. Open browser
-# Frontend: http://localhost:3000
-# Backend:  http://localhost:5000/health
-
-# Test accounts:
-# User:  user@globetrotter.com / User@123
-# Admin: admin@globetrotter.com / Admin@123
-```
-
-### Option 2: Manual Setup
-
-```bash
-# 1. Start PostgreSQL (if not already running)
-# Ensure it's running on port 5432
+# 1. Install dependencies
+npm install
 
 # 2. Setup Backend
 cd server
-npm install
 cp .env.example .env
 # Edit .env with your database credentials
 npm run migrate
 npm run seed
-npm run dev    # Runs on port 5000
 
-# 3. Setup Frontend (new terminal)
-cd client
-npm install
-npm run dev    # Runs on port 3000
+# 3. Start both frontend and backend
+cd ..
+npm run dev
+# Frontend: http://localhost:3000
+# Backend: http://localhost:5001/health
+
+# Test accounts:
+# User:  user@globetrotter.com / User@123
+# Admin: admin@globetrotter.com / Admin@123
 ```
 
 ## First Steps
@@ -52,7 +42,7 @@ npm run dev    # Runs on port 3000
 ```
 GlobeTrotter_VA/
 ├── client/          # React frontend (port 3000)
-├── server/          # Express backend (port 5000)
+├── server/          # Express backend (port 5001)
 ├── database/        # SQL schemas and seeds
 ├── README.md        # Full documentation
 ├── ARCHITECTURE.md  # System design
@@ -64,16 +54,13 @@ GlobeTrotter_VA/
 ```bash
 # Development
 npm run dev              # Start both frontend & backend
+npm run dev:client       # Start only frontend
+npm run dev:server       # Start only backend
 
 # Database
 cd server
 npm run migrate          # Run database migrations
 npm run seed             # Populate sample data
-
-# Docker
-docker-compose up -d     # Start all services
-docker-compose down      # Stop all services
-docker-compose logs -f   # View logs
 ```
 
 ## Troubleshooting
@@ -82,16 +69,17 @@ docker-compose logs -f   # View logs
 ```bash
 # macOS/Linux
 lsof -ti:3000 | xargs kill -9
-lsof -ti:5000 | xargs kill -9
+lsof -ti:5001 | xargs kill -9
 ```
 
 **Database connection error?**
-- Check PostgreSQL is running: `docker-compose ps`
+- Check PostgreSQL is running: `pg_isready -h localhost -p 5432`
 - Verify `.env` credentials match database
+- Ensure database exists: `psql -l`
 
 **Frontend can't reach backend?**
-- Check backend is running: `curl http://localhost:5000/health`
-- Verify VITE_API_URL in `client/.env`
+- Check backend is running: `curl http://localhost:5001/health`
+- Verify VITE_API_URL in client (default: http://localhost:5001/api)
 
 ## What's Next?
 
