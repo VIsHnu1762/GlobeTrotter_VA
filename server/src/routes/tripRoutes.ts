@@ -9,6 +9,9 @@ const router = Router();
 // Get all trips for current user
 router.get('/', authenticate, tripController.getMyTrips);
 
+// Get public trips (explore)
+router.get('/public/explore', authenticate, tripController.getPublicTrips);
+
 // Get shared trip by token (public)
 router.get('/shared/:token', tripController.getSharedTrip);
 

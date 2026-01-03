@@ -24,6 +24,14 @@ export class TripRepository {
         return result.rows[0] || null;
     }
 
+    async findPublicTrips(userId: string, limit: number = 20): Promise<Trip[]> {
+        const result = await pool.query(
+            'SELECT * FROM trips WHERE is_public = true AND user_id != $1 ORDER BY created_at DESC LIMIT $2',
+            [userId, limit]
+        );
+        return result.rows;
+    }
+
     async create(data: any): Promise<Trip> {
         const id = uuidv4();
         const result = await pool.query(

@@ -11,6 +11,8 @@ const DashboardPage: React.FC = () => {
     const navigate = useNavigate();
     const [activeNav, setActiveNav] = useState('dashboard');
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [publicTrips, setPublicTrips] = useState<any[]>([]);
+    const [loadingPublic, setLoadingPublic] = useState(false);
 
     // Calendar helpers
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -53,6 +55,23 @@ const DashboardPage: React.FC = () => {
     const tripDates = getTripDates();
     const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
     const today = new Date();
+
+    // Fetch public trips for explore section
+    React.useEffect(() => {
+        const fetchPublicTrips = async () => {
+            try {
+                setLoadingPublic(true);
+                const { tripService } = await import('@services/tripService');
+                const data = await tripService.getPublicTrips(6); // Limit to 6 explore trips
+                setPublicTrips(data);
+            } catch (error) {
+                console.error('Error fetching public trips:', error);
+            } finally {
+                setLoadingPublic(false);
+            }
+        };
+        fetchPublicTrips();
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -200,72 +219,159 @@ const DashboardPage: React.FC = () => {
                             </div>
                         ) : (
                             <div>
-                                <div className="flex items-center justify-between mb-6">
-                                    <h2 className="text-2xl font-bold text-gray-900">My Trips</h2>
-                                    <span className="text-gray-600">{trips.length} {trips.length === 1 ? 'trip' : 'trips'} found</span>
-                                </div>
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    {trips.map((trip) => (
-                                        <div
-                                            key={trip.id}
-                                            className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group"
-                                        >
-                                            {/* Trip Card Header with Gradient Background */}
-                                            <div className="h-40 bg-gradient-to-br from-blue-400 via-teal-400 to-emerald-400 relative overflow-hidden p-6 flex flex-col justify-between">
-                                                {/* Decorative Elements */}
-                                                <div className="absolute inset-0 opacity-20">
-                                                    <svg viewBox="0 0 200 200" className="w-full h-full">
-                                                        <circle cx="150" cy="50" r="60" fill="white" />
-                                                        <circle cx="50" cy="150" r="40" fill="white" />
-                                                    </svg>
-                                                </div>
-                                                <div className="relative z-10">
-                                                    {trip.isPublic && (
-                                                        <span className="inline-flex items-center space-x-1 bg-white/30 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
-                                                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                                <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                                                            </svg>
-                                                            <span>Public</span>
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <h3 className="relative z-10 text-2xl font-bold text-white">{trip.title}</h3>
-                                            </div>
-
-                                            {/* Trip Card Body */}
-                                            <div className="p-6">
-                                                <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[40px]">
-                                                    {trip.description || 'No description provided'}
-                                                </p>
-
-                                                <div className="flex items-center text-sm text-gray-500 mb-6">
-                                                    <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                    </svg>
-                                                    <span className="font-medium">{formatDate(trip.startDate)} - {formatDate(trip.endDate)}</span>
-                                                </div>
-
-                                                <div className="flex space-x-2">
-                                                    <Link
-                                                        to={`/trips/${trip.id}`}
-                                                        className="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-400 text-white rounded-xl hover:shadow-lg transition-all text-sm font-semibold text-center"
-                                                    >
-                                                        View Details
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => handleDelete(trip.id, trip.title)}
-                                                        className="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all text-sm font-semibold"
-                                                        title="Delete trip"
-                                                    >
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
-                                            </div>
+                                {/* My Trips Section */}
+                                <div className="mb-12">
+                                    <div className="flex items-center justify-between mb-6">
+                                        <h2 className="text-2xl font-bold text-gray-900">My Trips</h2>
+                                        <span className="text-gray-600">{trips.length} {trips.length === 1 ? 'trip' : 'trips'} found</span>
+                                    </div>
+                                    {trips.length === 0 ? (
+                                        <div className="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
+                                            <p className="text-gray-600 mb-4">You haven't created any trips yet</p>
+                                            <Link
+                                                to="/trips/new"
+                                                className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-emerald-400 to-teal-400 text-white rounded-xl hover:shadow-lg transition-all font-semibold"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                                </svg>
+                                                <span>Create Your First Trip</span>
+                                            </Link>
                                         </div>
-                                    ))}
+                                    ) : (
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            {trips.map((trip) => (
+                                                <div
+                                                    key={trip.id}
+                                                    className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group"
+                                                >
+                                                    {/* Trip Card Header with Gradient Background */}
+                                                    <div className="h-40 bg-gradient-to-br from-blue-400 via-teal-400 to-emerald-400 relative overflow-hidden p-6 flex flex-col justify-between">
+                                                        {/* Decorative Elements */}
+                                                        <div className="absolute inset-0 opacity-20">
+                                                            <svg viewBox="0 0 200 200" className="w-full h-full">
+                                                                <circle cx="150" cy="50" r="60" fill="white" />
+                                                                <circle cx="50" cy="150" r="40" fill="white" />
+                                                            </svg>
+                                                        </div>
+                                                        <div className="relative z-10">
+                                                            {trip.isPublic && (
+                                                                <span className="inline-flex items-center space-x-1 bg-white/30 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                                                                    </svg>
+                                                                    <span>Public</span>
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <h3 className="relative z-10 text-2xl font-bold text-white">{trip.title}</h3>
+                                                    </div>
+
+                                                    {/* Trip Card Body */}
+                                                    <div className="p-6">
+                                                        <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[40px]">
+                                                            {trip.description || 'No description provided'}
+                                                        </p>
+
+                                                        <div className="flex items-center text-sm text-gray-500 mb-6">
+                                                            <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                            </svg>
+                                                            <span className="font-medium">{formatDate(trip.startDate)} - {formatDate(trip.endDate)}</span>
+                                                        </div>
+
+                                                        <div className="flex space-x-2">
+                                                            <Link
+                                                                to={`/trips/${trip.id}`}
+                                                                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-emerald-400 to-teal-400 text-white rounded-xl hover:shadow-lg transition-all text-sm font-semibold text-center"
+                                                            >
+                                                                View Details
+                                                            </Link>
+                                                            <button
+                                                                onClick={() => handleDelete(trip.id, trip.title)}
+                                                                className="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-all text-sm font-semibold"
+                                                                title="Delete trip"
+                                                            >
+                                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Explore Public Trips Section */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-6">
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-gray-900">Explore Trips</h2>
+                                            <p className="text-sm text-gray-600 mt-1">Get inspired by public trip itineraries</p>
+                                        </div>
+                                    </div>
+                                    {loadingPublic ? (
+                                        <div className="text-center py-12">
+                                            <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-coral-400 border-t-transparent"></div>
+                                        </div>
+                                    ) : publicTrips.length === 0 ? (
+                                        <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-gray-100">
+                                            <p className="text-gray-600">No public trips available yet</p>
+                                        </div>
+                                    ) : (
+                                        <div className="grid md:grid-cols-2 gap-6">
+                                            {publicTrips.map((trip) => (
+                                                <div
+                                                    key={trip.id}
+                                                    className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 group"
+                                                >
+                                                    {/* Trip Card Header with Different Gradient */}
+                                                    <div className="h-40 bg-gradient-to-br from-purple-400 via-pink-400 to-coral-400 relative overflow-hidden p-6 flex flex-col justify-between">
+                                                        {/* Decorative Elements */}
+                                                        <div className="absolute inset-0 opacity-20">
+                                                            <svg viewBox="0 0 200 200" className="w-full h-full">
+                                                                <circle cx="150" cy="50" r="60" fill="white" />
+                                                                <circle cx="50" cy="150" r="40" fill="white" />
+                                                            </svg>
+                                                        </div>
+                                                        <div className="relative z-10">
+                                                            <span className="inline-flex items-center space-x-1 bg-white/30 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clipRule="evenodd" />
+                                                                </svg>
+                                                                <span>Explore</span>
+                                                            </span>
+                                                        </div>
+                                                        <h3 className="relative z-10 text-2xl font-bold text-white">{trip.title}</h3>
+                                                    </div>
+
+                                                    {/* Trip Card Body */}
+                                                    <div className="p-6">
+                                                        <p className="text-gray-600 text-sm mb-4 line-clamp-2 min-h-[40px]">
+                                                            {trip.description || 'No description provided'}
+                                                        </p>
+
+                                                        <div className="flex items-center text-sm text-gray-500 mb-6">
+                                                            <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                            </svg>
+                                                            <span className="font-medium">{formatDate(trip.startDate)} - {formatDate(trip.endDate)}</span>
+                                                        </div>
+
+                                                        <Link
+                                                            to={`/trips/${trip.id}`}
+                                                            className="block w-full px-4 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:shadow-lg transition-all text-sm font-semibold text-center"
+                                                        >
+                                                            View Itinerary
+                                                        </Link>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         )}

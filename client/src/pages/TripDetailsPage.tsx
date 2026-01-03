@@ -53,30 +53,23 @@ const TripDetailsPage: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
     useEffect(() => {
-        // TODO: Fetch trip data from API
-        // Mock data for now
-        const mockTrip: Trip = {
-            id: id || '1',
-            title: 'Trip to Tokyo',
-            description: 'Exploring the vibrant capital of Japan',
-            startDate: '2026-02-18',
-            endDate: '2026-02-28',
-            isPublic: true,
-            stops: [
-                {
-                    id: '1',
-                    city: 'Tokyo',
-                    country: 'Japan',
-                    startDate: '2026-02-18',
-                    endDate: '2026-02-28',
-                    notes: 'Main destination',
-                    latitude: 35.6762,
-                    longitude: 139.6503
-                }
-            ]
+        const fetchTrip = async () => {
+            if (!id) return;
+
+            try {
+                setLoading(true);
+                const { tripService } = await import('@services/tripService');
+                const tripData = await tripService.getTripById(id);
+                setTrip(tripData);
+            } catch (error) {
+                console.error('Error fetching trip:', error);
+                toast.error('Failed to load trip details');
+            } finally {
+                setLoading(false);
+            }
         };
-        setTrip(mockTrip);
-        setLoading(false);
+
+        fetchTrip();
     }, [id]);
 
     const getDaysBetween = (start: string, end: string) => {

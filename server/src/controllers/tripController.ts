@@ -31,9 +31,13 @@ export class TripController {
                 throw new AppError('Unauthorized', 403);
             }
 
+            // Get stops with coordinates
+            const stopRepository = await import('../repositories/stopRepository.js');
+            const stops = await stopRepository.default.findByTripId(trip.id);
+
             res.json({
                 success: true,
-                data: trip,
+                data: { ...trip, stops },
             });
         } catch (error) {
             next(error);
@@ -48,9 +52,26 @@ export class TripController {
                 throw new AppError('Shared trip not found', 404);
             }
 
+            // Get stops with coordinates
+            const stopRepository = await import('../repositories/stopRepository.js');
+            const stops = await stopRepository.default.findByTripId(trip.id);
+
             res.json({
                 success: true,
-                data: trip,
+                data: { ...trip, stops },
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getPublicTrips(req: AuthRequest, res: Response<ApiResponse>, next: NextFunction) {
+        try {
+            const limit = parseInt(req.query.limit as string) || 20;
+            const trips = await tripRepository.findPublicTrips(req.user!.id, limit);
+            res.json({
+                success: true,
+                data: trips,
             });
         } catch (error) {
             next(error);
