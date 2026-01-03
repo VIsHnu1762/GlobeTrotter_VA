@@ -2,6 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuth } from '@contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+// Fix default marker icon issue with webpack
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+    iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 interface Stop {
     id: string;
@@ -10,6 +21,8 @@ interface Stop {
     startDate: string;
     endDate: string;
     notes?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 interface Activity {
@@ -56,7 +69,9 @@ const TripDetailsPage: React.FC = () => {
                     country: 'Japan',
                     startDate: '2026-02-18',
                     endDate: '2026-02-28',
-                    notes: 'Main destination'
+                    notes: 'Main destination',
+                    latitude: 35.6762,
+                    longitude: 139.6503
                 }
             ]
         };
@@ -187,8 +202,8 @@ const TripDetailsPage: React.FC = () => {
                                             key={index}
                                             onClick={() => setSelectedDate(day.toISOString())}
                                             className={`w-full px-3 py-1.5 text-left text-sm rounded transition-colors ${selectedDate === day.toISOString()
-                                                    ? 'bg-coral-50 text-coral-600 font-medium'
-                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                ? 'bg-coral-50 text-coral-600 font-medium'
+                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                                 }`}
                                         >
                                             {formatDate(day)}
@@ -359,37 +374,65 @@ const TripDetailsPage: React.FC = () => {
 
             {/* Right Sidebar - Map */}
             <aside className="w-96 bg-white border-l border-gray-200 relative">
-                <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                    {/* Map Placeholder */}
-                    <div className="text-center p-8">
-                        <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                        </svg>
-                        <p className="text-gray-600 font-medium mb-2">Interactive Map</p>
-                        <p className="text-sm text-gray-500">Map view will show your trip destinations and points of interest</p>
+                {trip.stops.length > 0 && trip.stops[0].latitude && trip.stops[0].longitude ? (
+                    <MapContainer
+                        center={[trip.stops[0].latitude, trip.stops[0].longitude]}
+                        zoom={12}
+                        style={{ height: '100%', width: '100%' }}
+                        className="z-0"
+                    >
+                        <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+
+                        {/* Markers for each stop */}
+                        {trip.stops.map((stop, index) => (
+                            stop.latitude && stop.longitude && (
+                                <Marker
+                                    key={stop.id}
+                                    position={[stop.latitude, stop.longitude]}
+                                >
+                                    <Popup>
+                                        <div className="text-center">
+                                            <h3 className="font-bold text-gray-900">{stop.city}</h3>
+                                            <p className="text-sm text-gray-600">{stop.country}</p>
+                                            <p className="text-xs text-gray-500 mt-1">
+                                                {formatDateRange(stop.startDate, stop.endDate)}
+                                            </p>
+                                            {stop.notes && (
+                                                <p className="text-xs text-gray-600 mt-1">{stop.notes}</p>
+                                            )}
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            )
+                        ))}
+
+                        {/* Draw route line between stops */}
+                        {trip.stops.length > 1 && (
+                            <Polyline
+                                positions={trip.stops
+                                    .filter(s => s.latitude && s.longitude)
+                                    .map(s => [s.latitude!, s.longitude!])}
+                                color="#ff6b6b"
+                                weight={3}
+                                opacity={0.7}
+                                dashArray="10, 10"
+                            />
+                        )}
+                    </MapContainer>
+                ) : (
+                    <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+                        <div className="text-center p-8">
+                            <svg className="w-20 h-20 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                            </svg>
+                            <p className="text-gray-600 font-medium mb-2">No Location Data</p>
+                            <p className="text-sm text-gray-500">Add coordinates to your stops to see them on the map</p>
+                        </div>
                     </div>
-                </div>
-
-                {/* Map Controls */}
-                <div className="absolute top-4 right-4 space-y-2">
-                    <button className="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-50">
-                        <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                    </button>
-                    <button className="bg-white shadow-lg rounded-lg p-2 hover:bg-gray-50">
-                        <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                        </svg>
-                    </button>
-                </div>
-
-                <button className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white shadow-lg rounded-lg px-4 py-2 hover:bg-gray-50 flex items-center space-x-2">
-                    <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <span className="text-sm font-medium text-gray-700">Zoom into places</span>
-                </button>
+                )}
             </aside>
         </div>
     );
