@@ -80,7 +80,7 @@ const DashboardPage: React.FC = () => {
             {/* Sidebar */}
             <aside className="w-64 bg-white rounded-r-3xl shadow-lg flex flex-col p-6">
                 {/* Logo */}
-                <Link to="/dashboard" className="flex items-center space-x-2 mb-10">
+                <Link to="/" className="flex items-center space-x-2 mb-10">
                     <svg className="w-8 h-8 text-coral-500" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
@@ -325,10 +325,10 @@ const DashboardPage: React.FC = () => {
                                         <div
                                             key={day}
                                             className={`aspect-square flex items-center justify-center text-sm rounded-lg transition-all cursor-pointer relative ${isToday
-                                                    ? 'bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-bold shadow-md'
-                                                    : hasTrip
-                                                        ? 'bg-gradient-to-r from-orange-400 to-coral-400 text-white font-semibold'
-                                                        : 'text-gray-700 hover:bg-gray-100'
+                                                ? 'bg-gradient-to-r from-emerald-400 to-teal-400 text-white font-bold shadow-md'
+                                                : hasTrip
+                                                    ? 'bg-gradient-to-r from-orange-400 to-coral-400 text-white font-semibold'
+                                                    : 'text-gray-700 hover:bg-gray-100'
                                                 }`}
                                         >
                                             {day}
