@@ -1,0 +1,135 @@
+# 🌍 PROMPT — Create the GlobeTrotter Website (DESCRIPTION ONLY)
+
+You are a product designer and content creator.
+
+Your task is to **create a complete website description for a project called “GlobeTrotter”**.  
+Focus **only on explaining the product, pages, and user experience**.  
+Do **NOT** include any technical or implementation details.
+
+---
+
+## 🔹 PRODUCT DESCRIPTION
+
+**GlobeTrotter** is a **planner-first travel planning platform** designed to help users plan and visualize their trips before making any bookings.
+
+Unlike traditional travel platforms that focus on reservations, GlobeTrotter focuses on:
+- Helping users think through their journey
+- Visualizing travel routes and destinations
+- Structuring trips in a clear and intuitive way
+
+The goal is to make travel planning **simple, visual, and stress-free**.
+
+---
+
+## 🔹 PURPOSE OF THE WEBSITE
+
+The website should:
+- Clearly explain what GlobeTrotter is
+- Show how users can plan trips visually
+- Highlight the value of map-based trip planning
+- Communicate that the product is about planning, not booking
+
+---
+
+## 🔹 TARGET USERS
+
+### Guests
+- Visitors exploring the idea of the platform
+- Can view sample trips and maps
+- Can understand how planning works
+
+### Users
+- Travelers who want to design their own trips
+- Can create trips and add locations
+- Can visually explore routes and destinations
+
+---
+
+## 🔹 WEBSITE PAGES & DESCRIPTIONS
+
+### 1. Landing Page
+Describe:
+- The core idea of planning before booking
+- A simple explanation of how GlobeTrotter works
+- Key highlights such as visual planning and map-based exploration
+- Clear calls to action like “Explore Trips” or “Start Planning”
+
+---
+
+### 2. Dashboard
+Describe:
+- A personalized space for users
+- Overview of created trips
+- Quick access to continue planning
+- A visual preview of trips on a map
+
+---
+
+### 3. Create Trip Page
+Describe:
+- A simple flow to start a new trip
+- Naming a trip and defining travel dates
+- Moving seamlessly into trip planning
+
+---
+
+### 4. Itinerary Builder Page
+Describe:
+- Adding multiple destinations to a trip
+- Seeing locations plotted on a map
+- Understanding the journey visually rather than as a list
+- Making adjustments easily
+
+---
+
+### 5. Trip Overview Page
+Describe:
+- A summary of the planned trip
+- All destinations in one place
+- A clear visual representation of the route
+- Space reserved for future enhancements like budget insights
+
+---
+
+### 6. About the Project Page
+Describe:
+- The problem with existing travel platforms
+- Why GlobeTrotter focuses on planning
+- How visual thinking improves travel decisions
+- The idea behind building this project during a hackathon
+
+---
+
+### 7. Team Page
+Describe:
+- The people behind the project
+- Their collaboration and roles
+- The shared goal of building a planner-first travel experience
+
+Team members:
+- Vishnu Dharshan
+- Amalraajan
+
+---
+
+## 🔹 TONE & STYLE
+
+- Clear and simple language
+- User-focused explanations
+- Emphasis on planning and visualization
+- Honest about current scope and future possibilities
+
+---
+
+## 🔹 FINAL NOTE
+
+The website description should make it easy for anyone to understand:
+- What GlobeTrotter does
+- Why it exists
+- How it is different from booking platforms
+
+Do not include any code, frameworks, or technical architecture.
+
+---
+
+### Begin creating the GlobeTrotter website description now.
